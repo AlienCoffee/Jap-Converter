@@ -1,12 +1,75 @@
 from PIL import Image as im
 import string
 import openpyxl
-name=input('название экселя в итоге ')
+from openpyxl import Workbook
+import requests
+from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font, Side
+def coor(b,c):
+    import string
+    l=string.ascii_uppercase
+    c=str(c)
+    if b>25:
+      b=l[-1+b//26]+l[b%26]
+    else:
+        b=l[b]
+    x=b+c
+    return x
+def cif(b):
+    if b>25:
+      b=l[-1+b//26]+l[b%26]
+    else:
+        b=l[b]
+    return b
+borderf=Border(left=Side(border_style='thick',
+                             color='00000000'),
+                   right=Side(border_style='thin',
+                              color='b0b0b0b0'),
+                   top=Side(border_style='thick',
+                             color='00000000'),
+                   bottom=Side(border_style='thin',
+                               color='b0b0b0b0'))
+bordercl = Border(left=Side(border_style='thick',
+                             color='00000000'))
+bordercl2= Border(left=Side(border_style='thick',
+                             color='00000000'),top=Side(border_style='thin',
+                            color='b0b0b0b0'))
+bordercv = Border(top=Side(border_style='thick',
+                             color='00000000'))
+bordercv2 = Border(top=Side(border_style='thick',
+                             color='00000000'),left=Side(border_style='thin',
+                             color='b0b0b0b0'))
+border2 = Border(left=Side(border_style='thin',
+                             color='b0b0b0b0'),
+                   right=Side(border_style='thin',
+                              color='b0b0b0b0'),
+                   top=Side(border_style='thin',
+                            color='b0b0b0b0'),
+                   bottom=Side(border_style='thin',
+                               color='b0b0b0b0'))
+fill = PatternFill(fill_type='solid',
+                   start_color='000000',
+                   end_color='000000')
+fillkv=PatternFill(fill_type='solid',
+                   start_color='b0b0b0',
+                   end_color='b0b0b0')
+name=input('название будущего excel файла ')
 name=name+'.xlsx'
-fak=input('путь до файла ')
-lv=int(input('отступ слева '))
-ve=int(input('отступ сверху '))
-image = im.open(fak+'.png')
+Im=im.new('RGB',(1000,1000))
+Im.save(name+'.png')
+fak=input('URL картинки ')
+lvr=int(input('длина рамки слева в клетках '))
+lvo=int(input('отступ от начала картинки слева '))
+lv=lvr+lvo
+ver=int(input('длина рамки в клетках сверху '))
+veo=int(input('отступ от начала картинки сверху '))
+ve=ver+veo
+gor=int(input('длина картинки в клетках по горизонстали '))
+vert=int(input('длина картинки в клетках по вертикали '))
+p = requests.get(fak)
+out = open(name+'.png', "wb")
+out.write(p.content)
+out.close()
+image = im.open(name+'.png')
 width = image.size[0]
 height = image.size[1]
 print(width)
@@ -16,26 +79,27 @@ rl=2
 rv=2
 rp=2
 rn=2
+pobeda=-1
 for i in range(width):
     rl+=1
-    if abs(pix[i+1,round(height/2)][0]-150)<30 and abs(pix[i,round(height/2)][0])<10:
+    if abs(pix[i+1,round(height/2)][0]-176)<10 and abs(pix[i,round(height/2)][0])<10:
         break
 for i in range(height):
     rv+=1
-    if abs(pix[round(width/2),i+1][0]-150)<30 and abs(pix[round(width/2),i][0])<10:
+    if abs(pix[round(width/2),i+1][0]-176)<10 and abs(pix[round(width/2),i][0])<10:
         break
 for i in range(width):
     rp+=1
-    if abs(pix[width-2-i,round(height/2)][0]-150)<30 and abs(pix[width-1-i,round(height/2)][0])<10:
+    if abs(pix[width-2-i,round(height/2)][0]-176)<10 and abs(pix[width-1-i,round(height/2)][0])<10:
         break
 for i in range(height):
     rn+=1
-    if abs(pix[round(width/2),height-2-i][0]-150)<30 and abs(pix[round(width/2),height-1-i][0])<10:
+    if abs(pix[round(width/2),height-2-i][0]-176)<10 and abs(pix[round(width/2),height-1-i][0])<10:
         break
 area=(rl,rv,width-rp,height-rn)
 image=image.crop(area)
-image.save(fak+'1.png')
-image = im.open(fak+'1.png')
+#image.save(name+'1.png')
+#image = im.open(name+'1.png')
 image.show()
 width = image.size[0]
 height = image.size[1]
@@ -63,15 +127,13 @@ for i in range(len(s)):
     else:
         print('sosi')
         print(s[i])
-wb = openpyxl.workbook.Workbook(name)
-wb.create_sheet('Лист1')
-wb.save(name)
-wb = openpyxl.load_workbook(name)
-sheet = wb['Лист1']
+wb = Workbook()
+sheet=wb.active
 for i in range(width-1):
   c=[]
   c1=[0]
   if (pix[i+1,1][0] in sto and pix[i,j][0] not in sto) or (i+1==width-1 and pix[i,j][0] not in sto):
+     pobeda+=1
      for j in range(height-1):
         if (pix[i,j+1][0] in sto and pix[i,j][0] in nol) or (j+1==height-1 and pix[i,j][0] in nol):
             c.append('ch')
@@ -79,26 +141,17 @@ for i in range(width-1):
             c.append('b')
      for f in range(len(c)):
          if c[f]=='ch':
+             sheet[coor(pobeda+lv,f+ve+1)].fill=fill
              c1[len(c1)-1]+=1
          else:
              if c1!=[0] and c[f-1]=='ch':
                  c1.append(0)
      if c1[len(c1)-1]==0:
         c1.remove(0)
-     print(c1)
-     print(1)
+     #print(c1)
+     #print(1)
      for i in range(len(c1)):
-      cif=str(ve-len(c1)+1+i)
-      if n+lv>77 and n+lv<=103:
-          buk='C'+l[lv+n-78]
-      if n+lv>51 and n+lv<=77:
-          buk='B'+l[lv+n-52]
-      if n+lv>25 and n+lv<=51:
-          buk='A'+l[lv+n-26]
-      if n+lv<=25:
-          buk=l[lv+n]
-      print(buk+cif)
-      sheet[buk+cif]=c1[i]
+      sheet[coor(lv+n,ve-len(c1)+1+i)]=c1[i]
      n+=1
 n=0
 for i in range(height-1):
@@ -119,7 +172,7 @@ for i in range(height-1):
                  c1.append(0)
      if c1[len(c1)-1]==0:
         c1.remove(0)
-     print(c1)
+     #print(c1)
      for i in range(len(c1)):
       cif=str(ve+n+1)
       if lv-len(c1)>25:
@@ -128,4 +181,27 @@ for i in range(height-1):
        buk=l[lv-len(c1)-26+i]
       sheet[buk+cif]=c1[i]
      n+=1
+for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lv+gor-1,ve+vert)]:
+    for cell in cellObj:
+        sheet[cell.coordinate].border = border2
+for i in range(lvo,lv+gor):
+    sheet[coor(i,veo+1)].border=bordercv2
+    sheet[coor(i,veo+1+ver)].border=bordercv2
+    sheet[coor(i,ve+vert+1)].border=bordercv
+for i in range(veo,ve+vert):
+    sheet[coor(lvo,i+1)].border=bordercl2
+    sheet[coor(lvo+lvr,i+1)].border=bordercl2
+    sheet[coor(lv+gor,i+1)].border=bordercl
+sheet[coor(lvo,veo+1)].border=borderf
+sheet[coor(lvo,ver+veo+1)].border=borderf
+sheet[coor(lvr+lvo,veo+1)].border=borderf
+sheet[coor(lvr+lvo,ver+veo+1)].border=borderf
+for i in sheet[coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo)]:
+    for j in i:
+        sheet[j.coordinate].fill=fillkv
+for i in range(gor+lv):
+    sheet.column_dimensions[sheet[1][i].column].width =4
+wb.save(name)
+for i in range(vert+ve):
+    sheet.row_dimensions[sheet[1][i].row].height=1
 wb.save(name)
