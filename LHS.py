@@ -200,8 +200,5 @@ for i in sheet[coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo)]:
     for j in i:
         sheet[j.coordinate].fill=fillkv
 for i in range(gor+lv):
-    sheet.column_dimensions[sheet[1][i].column].width =4
-wb.save(name)
-for i in range(vert+ve):
-    sheet.row_dimensions[sheet[1][i].row].height=1
+    sheet.column_dimensions[sheet[1][i].column].width =3
 wb.save(name)
