@@ -28,13 +28,15 @@ def coor(b,c):
 def border(q,r):
     for i in range(4):
         if q[i]==1:
-            q[i]='thick'
-        else:
+            q[i]='medium'
+        elif q[i]==0:
             q[i]='thin'
+        else:
+            q[i]='medium'
         if r[i]==0:
             r[i]='00000000'
         elif r[i]==1:
-            r[i]='b0b0b0b0'
+            r[i]='00000000'
     border=Border(left=Side(border_style=q[0],
                              color=r[0]),
                    right=Side(border_style=q[1],
@@ -46,7 +48,7 @@ def border(q,r):
     return border
 def fill(a):
     if a==0:
-        a='000000'
+        a='444444'
     else:
         a='b0b0b0'
     fill=PatternFill(fill_type='solid',
@@ -61,21 +63,28 @@ align_center=Alignment(horizontal='center',
                        indent=0)
 #2.Приём
 name=input('название будущего excel файла ')
-lvr=int(input('длина рамки (в клетках) слева'))
-lvo=int(input('отступ от начала картинки (в клетках) слева '))
+lvr=int(input('длина рамки (в клетках) слева '))
+lvo=1
 ver=int(input('длина рамки (в клетках) сверху '))
-veo=int(input('отступ от начала картинки (в клетках) сверху '))
-gor=int(input('длина картинки (в клетках) по горизонстали '))
-vert=int(input('длина картинки (в клетках) по вертикали '))
+veo=3
 fak=input('URL картинки ')
+proverka=['h','t','t','p',':']
+check=0
+for i in range(5):
+    if proverka[i]!=fak[i]:
+        check=1
+if check==0:  
 #3.Обрезание
 #3.1.Скачал картинку
-Im=im.new('RGB',(1000,1000))
-Im.save(name+'.png')
-p = requests.get(fak)
-out = open(name+'.png', "wb")
-out.write(p.content)
-out.close()
+    Im=im.new('RGB',(1000,1000))
+    Im.save(name+'.png')
+    p = requests.get(fak)
+    out = open(name+'.png', "wb")
+    out.write(p.content)
+    out.close()
+else:
+    Im=im.open(fak)
+    Im.save(name+'.png')
 #3.2.Поиск "гнаниц рамки"
 image = im.open(name+'.png')
 #image.show()
@@ -140,10 +149,19 @@ for i in range(width-1):
                 c[pobeda].append('ch')
             if (pix[i,j+1][0] in s[2] and pix[i,j][0] in s[3]) or (j+1==height-1 and pix[i,j][0] in s[3]):
                 c[pobeda].append('b')
+gor=len(c)
+vert=len(c[0])
 #5. Рисуем клетки+пишем цифры
 wb = Workbook()
 sheet=wb.active
+sheet.title='Ответ'
+wb.create_sheet('Задание')
+sheet1=wb['Задание']
 levi=[]
+sheet.merge_cells(coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo))
+sheet.merge_cells('C2:'+coor(lvr+lvo+gor-2,2))
+sheet1.merge_cells(coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo))
+sheet1.merge_cells('C2:'+coor(lvr+lvo+gor-2,2))
 for i in range(len(c[0])):#v и levi[b][0] -контроль первой черной клетки снизу(справа) в столбике (строке)
     #levi[b][1]-отвечает за сдвиг внутри рамки при записи цифр
     levi.append([0,0])
@@ -158,29 +176,36 @@ for i in range(len(c)):
             #А вот работаем с циферками
             if v==0:
                 sheet[coor(lvo+lvr+a,veo+ver+verh)]=1
+                sheet1[coor(lvo+lvr+a,veo+ver+verh)]=1
                 v+=1
             elif c[a][b+1]=='ch':
                 sheet[coor(lvo+lvr+a,veo+ver+verh)]=1+sheet[coor(lvo+lvr+a,veo+ver+verh)].value
+                sheet1[coor(lvo+lvr+a,veo+ver+verh)]=1+sheet1[coor(lvo+lvr+a,veo+ver+verh)].value
             else:
                 verh-=1
                 sheet[coor(lvo+lvr+a,veo+ver+verh)]=1
+                sheet1[coor(lvo+lvr+a,veo+ver+verh)]=1
             if levi[b][0]==0:
                 sheet[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1
+                sheet1[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1
                 levi[b][0]+=1
             elif c[a+1][b]=='ch':
                 sheet[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1+sheet[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)].value
+                sheet1[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1+sheet1[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)].value
             else:
                 levi[b][1]-=1
                 sheet[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1
+                sheet1[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1
 
 for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
     for cell in cellObj:
         q=[0,0,0,0]
         r=[1,1,1,1]
-        for i in range(lvo+lvr+gor+1):
+        for i in range(lvo+lvr+gor):
             if cell.column==buk(i):
                 b=i
         a=cell.row
+        #print(b)
         if b in [lvo,lvr+lvo]:
             q[0]=1
             r[0]=0
@@ -193,21 +218,27 @@ for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
         if a==veo+ver+vert:
             q[3]=1
             r[3]=0
-        if a>veo+ver and veo+ver%5==a%5 and a not in [ver+veo+vert,veo+ver]:
-            q[3]=1
-        if b>lvo+lvr-1 and lvo+lvr%5==b%5 and b not in [lvo+lvr+gor-1,lvo+lvr-1]:
-            q[0]=1
+        if a>veo+ver and (veo+ver)%5==a%5 and a not in [ver+veo+vert,veo+ver]:
+            q[3]=2
+        if b>lvo+lvr-1 and (lvo+lvr)%5==b%5 and b not in [lvo+lvr+gor-1,lvo+lvr]:
+            q[0]=2
+        qq=[]
+        rr=[]
+        for po in range(4):
+            qq.append(q[po])
+            rr.append(r[po])
         sheet[cell.coordinate].border=border(q,r)
         sheet[cell.coordinate].alignment=align_center
-for i in sheet[coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo)]:
-    for j in i:
-        sheet[j.coordinate].fill=fill(1)
+        sheet1[cell.coordinate].border=border(qq,rr)
+        sheet1[cell.coordinate].alignment=align_center
+#for i in sheet[coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo)]:
+#    for j in i:
+#        sheet[j.coordinate].fill=fill(1)
 for i in range(gor+lvo+lvr):
     sheet.column_dimensions[sheet[1][i].column].width =2.8
+    sheet1.column_dimensions[sheet[1][i].column].width =2.8
 os.remove(name+'.png')
-wb.save(name+'.xlsx')
-
-                   
+wb.save(name+'.xlsx')                 
                    
         
                 
