@@ -61,13 +61,23 @@ align_center=Alignment(horizontal='center',
                        wrap_text=False,
                        shrink_to_fit=False,
                        indent=0)
+font = Font(name='Cambria',
+                    size=15,
+                    bold=False,
+                    italic=False,
+                    vertAlign=None,
+                    underline='none',
+                    strike=False,
+                    color='00000000')
 #2.Приём
 name=input('название будущего excel файла ')
 lvr=int(input('длина рамки (в клетках) слева '))
 lvo=1
 ver=int(input('длина рамки (в клетках) сверху '))
-veo=3
+veo=4
 fak=input('URL картинки ')
+imya=input('Введите название кроссворда ')
+date=input('Введите дату (в формате дд.мм.гг) ')
 proverka=['h','t','t','p',':']
 check=0
 for i in range(5):
@@ -162,6 +172,8 @@ sheet.merge_cells(coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo))
 sheet.merge_cells('C2:'+coor(lvr+lvo+gor-2,2))
 sheet1.merge_cells(coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo))
 sheet1.merge_cells('C2:'+coor(lvr+lvo+gor-2,2))
+sheet.merge_cells('C3:'+coor(lvr+lvo+gor-2,3))
+sheet1.merge_cells('C3:'+coor(lvr+lvo+gor-2,3))
 for i in range(len(c[0])):#v и levi[b][0] -контроль первой черной клетки снизу(справа) в столбике (строке)
     #levi[b][1]-отвечает за сдвиг внутри рамки при записи цифр
     levi.append([0,0])
@@ -196,7 +208,7 @@ for i in range(len(c)):
                 levi[b][1]-=1
                 sheet[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1
                 sheet1[coor(lvo+lvr+levi[b][1]-1,b+veo+ver+1)]=1
-
+#Оформление
 for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
     for cell in cellObj:
         q=[0,0,0,0]
@@ -205,7 +217,6 @@ for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
             if cell.column==buk(i):
                 b=i
         a=cell.row
-        #print(b)
         if b in [lvo,lvr+lvo]:
             q[0]=1
             r[0]=0
@@ -231,12 +242,17 @@ for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
         sheet[cell.coordinate].alignment=align_center
         sheet1[cell.coordinate].border=border(qq,rr)
         sheet1[cell.coordinate].alignment=align_center
-#for i in sheet[coor(lvo,veo+1)+':'+coor(lvr+lvo-1,ver+veo)]:
-#    for j in i:
-#        sheet[j.coordinate].fill=fill(1)
 for i in range(gor+lvo+lvr):
     sheet.column_dimensions[sheet[1][i].column].width =2.8
     sheet1.column_dimensions[sheet[1][i].column].width =2.8
+sheet['C2'].value='Ответ на кроссворд "'+imya+'" От '+date
+sheet['C3'].value='Кому понравилось ставим "+"______________'
+sheet1['C2'].value=date+' Японский кроссворд "'+imya+'"'
+sheet1['C3'].value='Ответы нести в комнату...ну где кароче будем'
+sheet['C2'].font=font
+sheet1['C2'].font=font
+sheet['C2'].alignment=align_center
+sheet1['C2'].alignment=align_center
 os.remove(name+'.png')
 wb.save(name+'.xlsx')                 
                    
