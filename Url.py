@@ -76,7 +76,6 @@ lvo=1
 ver=int(input('длина рамки (в клетках) сверху '))
 veo=4
 fak=input('URL картинки ')
-imya=input('Введите название кроссворда ')
 date=input('Введите дату (в формате дд.мм.гг) ')
 proverka=['h','t','t','p',':']
 check=0
@@ -245,14 +244,16 @@ for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
 for i in range(gor+lvo+lvr):
     sheet.column_dimensions[sheet[1][i].column].width =2.8
     sheet1.column_dimensions[sheet[1][i].column].width =2.8
-sheet['C2'].value='Ответ на кроссворд "'+imya+'" От '+date
-sheet['C3'].value='Кому понравилось ставим "+"______________'
-sheet1['C2'].value=date+' Японский кроссворд "'+imya+'"'
+sheet['C2'].value='Ответ на кроссворд "'+name+'" От '+date
+sheet['C3'].value='Понравилось? - плюсуй сюда:'+'_'*(gor*2+int(round(gor*0.45)))
+sheet1['C2'].value=date+' Японский кроссворд "'+name+'"'
 sheet1['C3'].value='Ответы нести в комнату...ну где кароче будем'
 sheet['C2'].font=font
 sheet1['C2'].font=font
 sheet['C2'].alignment=align_center
 sheet1['C2'].alignment=align_center
+#sheet['C3'].alignment=align_center
+sheet1['C3'].alignment=align_center
 os.remove(name+'.png')
 wb.save(name+'.xlsx')                 
                    
