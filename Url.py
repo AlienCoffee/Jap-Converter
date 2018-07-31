@@ -7,6 +7,7 @@ import openpyxl
 from openpyxl import Workbook
 import requests
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font, Side
+import time
 # buk-выдаёт число(стобец) покоординате
 #coor-выдаёт чисто в формате буквацифра('A1' )при вводе координат (0,1)
 #border-рамка
@@ -76,7 +77,15 @@ lvo=1
 ver=int(input('длина рамки (в клетках) сверху '))
 veo=4
 fak=input('URL картинки ')
-date=input('Введите дату (в формате дд.мм.гг) ')
+date=input('хотите использовать сегодняшнуюю дату?(1-да 2-нет) ')
+if date=='1':
+    if time.localtime()[1]<10:
+        mes='0'+str(time.localtime()[1])
+    else:
+        mes=str(time.localtime()[1])
+    date=str(time.localtime()[2])+'.'+mes+'.'+str(time.localtime()[0]-2000)
+else:
+    date=input('Введите дату (в формате дд.мм.гг)')
 proverka=['h','t','t','p',':']
 check=0
 for i in range(5):
@@ -244,7 +253,7 @@ for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
 for i in range(gor+lvo+lvr):
     sheet.column_dimensions[sheet[1][i].column].width =2.8
     sheet1.column_dimensions[sheet[1][i].column].width =2.8
-sheet['C2'].value='Ответ на кроссворд "'+name+'" От '+date
+sheet['C2'].value='Ответ на кроссворд "'+name+'" от '+date
 sheet['C3'].value='Понравилось? - плюсуй сюда:'+'_'*(gor*2+int(round(gor*0.45)))
 sheet1['C2'].value=date+' Японский кроссворд "'+name+'"'
 sheet1['C3'].value='Ответы нести в комнату...ну где кароче будем'
