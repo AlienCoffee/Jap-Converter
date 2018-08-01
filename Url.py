@@ -83,7 +83,11 @@ if date=='1':
         mes='0'+str(time.localtime()[1])
     else:
         mes=str(time.localtime()[1])
-    date=str(time.localtime()[2])+'.'+mes+'.'+str(time.localtime()[0]-2000)
+    if time.localtime()[2]<10:
+        mes1='0'+str(time.localtime()[2])
+    else:
+        mes1=str(time.localtime()[2])
+    date=mes1+'.'+mes+'.'+str(time.localtime()[0]-2000)
 else:
     date=input('Введите дату (в формате дд.мм.гг) ')
 proverka=['h','t','t','p',':']
