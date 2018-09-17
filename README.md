@@ -1,0 +1,1 @@
+# Japanese crosswords converter
