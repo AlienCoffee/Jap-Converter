@@ -90,12 +90,12 @@ if date=='1':
     date=mes1+'.'+mes+'.'+str(time.localtime()[0]-2000)
 else:
     date=input('Введите дату (в формате дд.мм.гг) ')
-proverka=['h','t','t','p',':']
+proverka=['h','t','t','p','s']
 check=0
 for i in range(5):
     if proverka[i]!=fak[i]:
         check=1
-if check==0:  
+if check==0:
 #3.Обрезание
 #3.1.Скачал картинку
     Im=im.new('RGB',(1000,1000))
@@ -195,7 +195,7 @@ for i in range(len(c)):
     for j in range(len(c[0])):
         a=len(c)-i-1
         b=len(c[0])-j-1
-        if c[a][b]=='ch':       
+        if c[a][b]=='ch':
             sheet[coor(a+lvo+lvr,b+veo+ver+1)].fill=fill(0)#рисуем
             #А вот работаем с циферками
             if v==0:
@@ -255,8 +255,8 @@ for cellObj in sheet[coor(lvo,veo+1)+':'+coor(lvo+lvr+gor-1,ver+veo+vert)]:
         sheet1[cell.coordinate].border=border(qq,rr)
         sheet1[cell.coordinate].alignment=align_center
 for i in range(gor+lvo+lvr):
-    sheet.column_dimensions[sheet[1][i].column].width =2.8
-    sheet1.column_dimensions[sheet[1][i].column].width =2.8
+    sheet.column_dimensions[openpyxl.utils.cell.get_column_letter(i+1)].width =2.8
+    sheet1.column_dimensions[openpyxl.utils.cell.get_column_letter(i+1)].width =2.8
 sheet['C2'].value='Ответ на кроссворд "'+name+'" от '+date
 sheet['C3'].value='Понравилось? - плюсуй сюда:'+'_'*(gor*2+int(round(gor*0.45)))
 sheet1['C2'].value=date+' Японский кроссворд "'+name+'"'
@@ -268,7 +268,7 @@ sheet1['C2'].alignment=align_center
 #sheet['C3'].alignment=align_center
 sheet1['C3'].alignment=align_center
 os.remove(name+'.png')
-wb.save(name+'.xlsx')                 
+wb.save(name+'.xlsx')
                    
         
                 
